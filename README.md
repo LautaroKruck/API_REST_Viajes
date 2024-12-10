@@ -1,19 +1,11 @@
-# Organizador de Viajes en Grupo - API REST
+# Organizador de Viajes en Grupo - PLANIT - API REST Segura
 
 ## Descripción del Proyecto
 La API REST permite a los usuarios gestionar viajes grupales, facilitando la creación de viajes, la asignación de participantes y la planificación de actividades. Es un sistema seguro y funcional que se puede expandir fácilmente.
 
 ---
 
-## Tecnologías Utilizadas
-- **Spring Boot**: Framework para construir aplicaciones Java modernas.
-- **JWT (JSON Web Tokens)**: Autenticación y autorización.
-- **MySQL**: Base de datos relacional para la gestión de entidades y relaciones.
-- **Insomnia**: Herramienta para probar los endpoints.
-
----
-
-## Idea del Proyecto
+## Idea de API REST
 La API REST permite a los usuarios:
 - Crear, editar y eliminar viajes grupales.
 - Agregar participantes a los viajes.
@@ -21,36 +13,55 @@ La API REST permite a los usuarios:
 
 ---
 
+## Justificación del Proyecto
+Organizar viajes grupales puede ser caótico, especialmente cuando hay que gestionar itinerarios, actividades y comunicación entre los participantes.  
+El **Organizador de Viajes en Grupo** aborda este problema proporcionando una plataforma centralizada que facilita:
+1. La gestión colaborativa de viajes.
+2. La planificación de actividades con votaciones y sugerencias.
+3. Un sistema seguro y confiable para proteger los datos de los usuarios.
+
+Además, esta API REST cumple con las mejores prácticas en diseño y seguridad, lo que la hace adecuada para su integración en aplicaciones web o móviles.
+
+---
+
+## Tecnologías Utilizadas
+- **Spring Boot**: Framework para construir aplicaciones Java modernas.
+- **JWT (JSON Web Tokens)**: Autenticación y autorización.
+- **Base de Datos Relacional (MySQL)**: Gestión de entidades y relaciones.
+- **Insomnia**: Para probar los endpoints.
+
+---
+
 ## Diseño de Tablas
 
 ### **a. Usuarios**
-| Campo       | Tipo             | Descripción                              |
-|-------------|------------------|------------------------------------------|
-| `id`        | PK, autogenerado | Identificador único del usuario.         |
-| `username`  | String, único    | Nombre de usuario.                       |
-| `password`  | String           | Contraseña hasheada.                     |
-| `roles`     | String           | Roles: "user" o "admin".                 |
+| Campo       | Tipo            | Descripción                              |
+|-------------|-----------------|------------------------------------------|
+| `id`        | PK, autogenerado| Identificador único del usuario.         |
+| `username`  | String, único   | Nombre de usuario.                       |
+| `password`  | String          | Contraseña hasheada.                     |
+| `roles`     | String          | Roles: "user" o "admin".                 |
 
 ### **b. Viajes**
-| Campo           | Tipo             | Descripción                              |
-|------------------|------------------|------------------------------------------|
-| `id`            | PK, autogenerado | Identificador único del viaje.           |
-| `nombre`        | String           | Nombre del viaje.                        |
-| `descripcion`   | String           | Descripción del viaje.                   |
-| `fecha_inicio`  | Date             | Fecha estimada de inicio del viaje.      |
-| `fecha_fin`     | Date             | Fecha estimada de conclusión del viaje.  |
-| `organizador_id`| FK a Usuarios    | Usuario organizador del viaje.           |
-| `participantes` | List<Usuario>    | Lista de participantes del viaje.        |
-| `actividades`   | List<Actividad>  | Lista de actividades planificadas.       |
+| Campo           | Tipo            | Descripción                              |
+|------------------|-----------------|------------------------------------------|
+| `id`            | PK, autogenerado| Identificador único del viaje.           |
+| `nombre`        | String          | Nombre del viaje.                        |
+| `descripcion`   | String          | Descripción del viaje.                   |
+| `fecha_inicio`  | Date            | Fecha estimada de inicio del viaje.      |
+| `fecha_fin`     | Date            | Fecha estimada de conclusión del viaje.  |
+| `organizador_id`| FK a Usuarios   | Usuario organizador del viaje.           |
+| `participantes` | List<Usuario>   | Lista de participantes del viaje.        |
+| `actividades`   | List<Actividad> | Lista de actividades planificadas.       |
 
 ### **c. Actividades**
-| Campo         | Tipo             | Descripción                                |
-|---------------|:-----------------|:-------------------------------------------|
-| `id`          | PK, autogenerado | Identificador único de la actividad.       |
-| `nombre`      | String           | Nombre de la actividad.                    |
-| `descripcion` | String          | Descripción de la actividad.               |
-| `fecha_hora`  | DateTime         | Fecha y hora de la actividad.              |
-| `ubicacion`   | String           | Ubicación de la actividad.                 |
+| Campo       | Tipo            | Descripción                              |
+|-------------|-----------------|------------------------------------------|
+| `id`        | PK, autogenerado| Identificador único de la actividad.     |
+| `nombre`    | String          | Nombre de la actividad.                  |
+| `descripcion`| String         | Descripción de la actividad.             |
+| `fecha_hora`| DateTime        | Fecha y hora de la actividad.            |
+| `ubicacion` | String          | Ubicación donde se llevará a cabo.       |
 
 ---
 
@@ -62,38 +73,42 @@ La API REST permite a los usuarios:
 
 ### **Viajes**
 - `GET /viajes` - Obtener todos los viajes del usuario autenticado.
-- `POST /viajes` - Crear un viaje (solo usuarios autenticados).
-- `PUT /viajes/{id}` - Editar un viaje existente (solo organizador).
-- `DELETE /viajes/{id}` - Eliminar un viaje (solo organizador).
+- `POST /viajes` - Crear un nuevo viaje.
+- `PUT /viajes/{id}` - Editar un viaje existente.
+- `DELETE /viajes/{id}` - Eliminar un viaje.
 
 ### **Actividades**
 - `GET /viajes/{id}/actividades` - Listar actividades de un viaje.
 - `POST /viajes/{id}/actividades` - Añadir una actividad a un viaje.
-- `DELETE /actividades/{id}` - Eliminar una actividad (solo organizador).
+- `DELETE /actividades/{id}` - Eliminar una actividad.
 
 ---
 
 ## Lógica de Negocio
-La API sigue una estructura centrada en el usuario:
-1. **Gestión de Usuarios**: Los usuarios pueden registrarse, autenticarse y gestionar sus viajes.
-2. **Gestión de Viajes**: Solo el organizador del viaje puede editar o eliminar los viajes que ha creado.
-3. **Gestión de Actividades**: Las actividades están ligadas a un viaje específico y pueden ser gestionadas únicamente por el organizador.
+1. Los usuarios solo pueden editar o eliminar los viajes que ellos mismos han creado.
+2. Los usuarios pueden solo podrán ver los viajes en los que estén participando.
+3. Solo el organizador de un viaje puede añadir o eliminar participantes.
+3. Cada usuario puede registrarse, autenticarse y gestionar su propia información.
+4. Los JWT se generan y verifican en cada petición para garantizar la autenticación y autorización.
 
 ---
 
 ## Excepciones y Códigos de Estado
-- `400 Bad Request`: Datos de entrada no válidos.
-- `401 Unauthorized`: Usuario no autenticado.
-- `403 Forbidden`: Usuario no tiene permisos para realizar la acción.
-- `404 Not Found`: Recurso no encontrado.
-- `500 Internal Server Error`: Error inesperado en el servidor.
+| Código | Descripción                                  |
+|--------|----------------------------------------------|
+| 400    | `Bad Request`: Datos de entrada inválidos.   |
+| 401    | `Unauthorized`: Usuario no autenticado.      |
+| 403    | `Forbidden`: Usuario sin permisos.           |
+| 404    | `Not Found`: Entidad no encontrada.          |
+| 500    | `Internal Server Error`: Error del servidor. |
 
 ---
 
-## Seguridad
-La API implementa las siguientes medidas de seguridad:
-- Contraseñas hasheadas con **BCrypt**.
-- Autenticación y autorización mediante **JWT**.
-- Roles y permisos:
-  - **user**: Puede gestionar sus propios viajes.
-  - **admin**: Tiene acceso completo a los datos del sistema (opcional).
+## Restricciones de Seguridad
+1. Contraseñas almacenadas con **BCrypt**.
+2. Autenticación y autorización mediante **JWT**.
+3. Roles y permisos:
+  - **user**: Puede gestionar sus propios viajes y actividades.
+  - **admin** (opcional): Tiene acceso completo a los datos del sistema.
+4. Implementación de políticas CORS para controlar el acceso a la API desde dominios específicos.
+
