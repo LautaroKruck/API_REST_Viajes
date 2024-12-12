@@ -1,4 +1,4 @@
-package organizador_viajes.exception;
+package organizador_viajes.error;
 
 public class APIExceptionHandler {
 }
