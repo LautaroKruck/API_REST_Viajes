@@ -85,12 +85,72 @@ Además, esta API REST cumple con las mejores prácticas en diseño y seguridad,
 
 ---
 
-## Lógica de Negocio
-1. Los usuarios solo pueden editar o eliminar los viajes que ellos mismos han creado.
-2. Los usuarios solo pueden ver los viajes en los que estén participando.
-3. Solo el organizador de un viaje puede añadir o eliminar participantes.
-3. Cada usuario puede registrarse, autenticarse y gestionar su propia información.
-4. Los JWT se generan y verifican en cada petición para garantizar la autenticación y autorización.
+# Lógica de Negocio
+
+## Usuarios
+
+### Requisitos de Creación de Usuario
+- El `username` y la `contraseña` son obligatorios.
+    - Si alguno de estos campos está vacío o no se proporciona, se devolverá un error con el código **400 Bad Request**.
+- El `username` debe ser único.
+    - No se podrá registrar un usuario con un nombre que ya esté en uso.
+
+### Restricción de Edad
+- Un usuario debe tener una edad entre **10 y 100 años**.
+    - Si se proporciona una edad fuera de este rango, se devolverá un error **400 Bad Request**.
+
+### Edición de Usuario
+- Los usuarios solo pueden editar su propia información.
+    - Intentar editar los datos de otro usuario resultará en un error **403 Forbidden**.
+
+
+## Viajes
+
+### Requisitos para la Creación de Viaje
+- Un viaje debe tener un `nombre` y un `organizador` (usuario responsable).
+    - Si alguno de estos campos falta, se devolverá un error **400 Bad Request**.
+- La `fecha de inicio` tiene que ser anterior a la `fecha de finalización`.
+
+### Participación en Viajes
+- Un usuario no puede unirse a un viaje que ya haya finalizado.
+    - Si intenta unirse después de la fecha de finalización, se devolverá un error **400 Bad Request**.
+
+### Permisos de Modificación del Viaje
+- Un usuario solo puede editar o eliminar los viajes que ha creado.
+    - Si intenta modificar o eliminar un viaje que no le pertenece, se devolverá un error **403 Forbidden**.
+
+### Visualización de Viajes
+- Los usuarios solo pueden ver los viajes en los que están participando.
+    - Intentar acceder a viajes en los que no están involucrados resultará en un error **403 Forbidden**.
+
+### Agregar Actividades al Viaje
+- Todos los usuarios pueden agregar actividades a un viaje, independientemente de su rol.
+    - Las actividades solo se asociarán al viaje específico en el que el usuario participe.
+
+### Eliminación de Viajes
+- Solo el organizador del viaje puede eliminarlo.
+    - Intentar eliminar un viaje sin ser el organizador resultará en un error **403 Forbidden**.
+
+### Gestión de Participantes
+- Solo el organizador del viaje puede eliminar a otros usuarios del viaje.
+    - Intentar eliminar a un participante sin ser el organizador resultará en un error **403 Forbidden**.
+- Un usuario puede eliminarse a sí mismo del viaje en cualquier momento, siempre y cuando:
+    - No sea el único participante.
+    - No sea el organizador.
+
+
+## Actividades
+
+### Restricción de Fechas de Actividades
+- No se puede crear dos actividades con la misma fecha y hora dentro del mismo viaje.
+    - Si se intenta crear una actividad con una fecha que ya está ocupada, se devolverá un error **400 Bad Request**.
+- No puede haber actividades con una fecha y hora fuera del rango del viaje.
+    - Si se intenta crear una actividad con una fecha fuera del rango, se devolverá un error **400 Bad Request**.
+
+### Gestión de Actividades
+- Las actividades pueden ser eliminadas únicamente por el organizador del viaje.
+    - Si otro participante intenta eliminar una actividad, se devolverá un error **403 Forbidden**.
+
 
 ---
 
