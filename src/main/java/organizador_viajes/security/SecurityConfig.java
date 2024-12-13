@@ -49,26 +49,31 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable()) // Deshabilitamos CSRF (no lo trataremos en este ciclo)
                 .authorizeHttpRequests(auth -> auth
-                        // Rutas públicas
+                        // Rutas públicas sin autenticación
                         .requestMatchers("/usuarios/register", "/usuarios/login").permitAll()
 
-                        // Rutas protegidas - SEGUROS
-                        .requestMatchers(HttpMethod.GET, "/seguros").hasRole("ADMIN") // Solo ADMIN puede listar seguros
-                        .requestMatchers(HttpMethod.GET, "/seguros/{idSeguro}").authenticated() // Usuarios autenticados pueden ver detalles
-                        .requestMatchers(HttpMethod.POST, "/seguros").hasRole("ADMIN") // Solo ADMIN puede crear seguros
-                        .requestMatchers(HttpMethod.PUT, "/seguros/**").hasRole("ADMIN") // Solo ADMIN puede editar seguros
-                        .requestMatchers(HttpMethod.DELETE, "/seguros/**").hasRole("ADMIN") // Solo ADMIN puede eliminar seguros
+                        // Rutas relacionadas con USUARIOS
+                        .requestMatchers(HttpMethod.GET, "/usuarios/{idUsuario}").authenticated() // Detalles de usuario, solo para usuarios autenticados
+                        .requestMatchers(HttpMethod.PUT, "/usuarios/{idUsuario}").hasRole("USER") // Modificar usuario solo para el propio usuario
+                        .requestMatchers(HttpMethod.GET, "/usuarios").hasRole("ADMIN") // Listar todos los usuarios solo para ADMIN
+                        .requestMatchers(HttpMethod.DELETE, "/usuarios/{idUsuario}").hasRole("ADMIN") // Eliminar usuario solo para ADMIN
 
-                        // Rutas protegidas - ASISTENCIAS MÉDICAS
-                        .requestMatchers(HttpMethod.GET, "/asistencias").hasRole("ADMIN") // Solo ADMIN puede listar asistencias
-                        .requestMatchers(HttpMethod.GET, "/asistencias/{idAsistenciaMedica}").authenticated() // Usuarios autenticados pueden ver detalles
-                        .requestMatchers(HttpMethod.POST, "/seguros/{idSeguro}/asistencias").hasRole("ADMIN") // Solo ADMIN puede crear asistencias
-                        .requestMatchers(HttpMethod.PUT, "/asistencias/**").hasRole("ADMIN") // Solo ADMIN puede editar asistencias
-                        .requestMatchers(HttpMethod.DELETE, "/asistencias/**").hasRole("ADMIN") // Solo ADMIN puede eliminar asistencias
+                        // Rutas relacionadas con VIAJES
+                        .requestMatchers(HttpMethod.GET, "/viajes").hasRole("USER") // Los usuarios autenticados pueden ver viajes
+                        .requestMatchers(HttpMethod.GET, "/viajes/{idViaje}").authenticated() // Ver detalles de un viaje, solo para usuarios autenticados
+                        .requestMatchers(HttpMethod.POST, "/viajes").hasRole("ADMIN") // Crear viajes solo para ADMIN
+                        .requestMatchers(HttpMethod.PUT, "/viajes/{idViaje}").hasRole("ADMIN") // Modificar viaje solo para ADMIN
+                        .requestMatchers(HttpMethod.DELETE, "/viajes/{idViaje}").hasRole("ADMIN") // Eliminar viaje solo para ADMIN
 
-                        // Rutas restantes
-                        .anyRequest().authenticated() // El resto de endpoints requieren autenticación
-                        .anyRequest().authenticated() // El resto de endpoints requieren autenticación
+                        // Rutas relacionadas con ACTIVIDADES
+                        .requestMatchers(HttpMethod.GET, "/actividades").hasRole("USER") // Los usuarios autenticados pueden ver actividades
+                        .requestMatchers(HttpMethod.GET, "/actividades/{idActividad}").authenticated() // Ver detalles de actividad, solo para usuarios autenticados
+                        .requestMatchers(HttpMethod.POST, "/viajes/{idViaje}/actividades").hasRole("ADMIN") // Crear actividad en un viaje solo para ADMIN
+                        .requestMatchers(HttpMethod.PUT, "/actividades/{idActividad}").hasRole("ADMIN") // Modificar actividad solo para ADMIN
+                        .requestMatchers(HttpMethod.DELETE, "/actividades/{idActividad}").hasRole("ADMIN") // Eliminar actividad solo para ADMIN
+
+                        // Rutas restantes - cualquier otra ruta requiere autenticación
+                        .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())) // Establecemos el que el control de autenticación se realice por JWT
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

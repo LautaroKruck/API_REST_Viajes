@@ -2,6 +2,7 @@
 package organizador_viajes.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import organizador_viajes.dto.ViajeDTO;
 import organizador_viajes.error.exception.BadRequestException;
@@ -22,6 +23,9 @@ public class ViajeService {
     private ViajeRepository viajeRepository;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Autowired
@@ -35,11 +39,24 @@ public class ViajeService {
 
     // Crear un nuevo viaje
     public ViajeDTO crearViaje(ViajeDTO viajeDTO) {
+        // Buscar el organizador por ID
         Usuario organizador = usuarioRepository.findById(viajeDTO.getOrganizadorId())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario organizador no encontrado"));
 
+        // Convertir el DTO de viaje a la entidad
         Viaje viaje = viajeMapper.viajeToEntity(viajeDTO, organizador, null);
+
+        // 'viaje' tiene un campo llamado 'password'
+        // Si existe este campo, lo hasheamos antes de guardarlo
+        if (viaje.getPassword() != null) {
+            String passHashed = passwordEncoder.encode(viaje.getPassword());
+            viaje.setPassword(passHashed);  // Reemplazamos el valor original con la versión hasheada
+        }
+
+        // Guardamos el viaje en la base de datos
         Viaje viajeGuardado = viajeRepository.save(viaje);
+
+        // Retornamos el DTO con los datos del viaje guardado
         return viajeMapper.viajeToDto(viajeGuardado);
     }
 
