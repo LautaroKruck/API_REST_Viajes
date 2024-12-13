@@ -35,12 +35,13 @@ Además, esta API REST cumple con las mejores prácticas en diseño y seguridad,
 ## Diseño de Tablas
 
 ### **a. Usuarios**
-| Campo       | Tipo              | Descripción                              |
-|-------------|-------------------|------------------------------------------|
-| `id`        | PK, autogenerado  | Identificador único del usuario.         |
-| `username`  | String, único     | Nombre de usuario.                       |
-| `password`  | String            | Contraseña hasheada.                     |
-| `roles`     | String            | Roles: "user" o "admin".                 |
+| Campo      | Tipo             | Descripción                      |
+|------------|------------------|----------------------------------|
+| `id`       | PK, autogenerado | Identificador único del usuario. |
+| `username` | String, único    | Nombre de usuario.               |
+| `password` | String           | Contraseña hasheada.             |
+| `edad`     | Integer          | Edad del usuario.                |
+| `roles`    | String           | Roles: "user" o "admin".         |
 
 ### **b. Viajes**
 | Campo             | Tipo              | Descripción                              |
