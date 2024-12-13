@@ -9,6 +9,7 @@ public class ViajeDTO {
 
     private Long id;
     private String nombre;
+    private String password;
     private String descripcion;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
@@ -31,6 +32,14 @@ public class ViajeDTO {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getDescripcion() {
