@@ -1,6 +1,5 @@
 package organizador_viajes.dto;
 
-
 import java.time.LocalDateTime;
 
 // DTO de Actividad

@@ -2,6 +2,7 @@
 package organizador_viajes.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import organizador_viajes.dto.ViajeDTO;
@@ -34,7 +35,7 @@ public class ViajeService {
     @Autowired
     private ViajeMapper viajeMapper;
 
-    // Obtener todos los viajes de un usuario
+    // Método para obtener todos los viajes de un usuario
     public List<ViajeDTO> obtenerViajesPorUsuario(Long usuarioId) {
         List<Viaje> viajes = viajeRepository.findByParticipantes_Id(usuarioId);
         return viajes.stream().map(viajeMapper::viajeToDto).collect(Collectors.toList());
@@ -42,28 +43,23 @@ public class ViajeService {
 
     // Crear un nuevo viaje
     public ViajeDTO crearViaje(ViajeDTO viajeDTO) {
-        // Buscar el organizador por ID
         Usuario organizador = usuarioRepository.findById(viajeDTO.getOrganizadorId())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario organizador no encontrado"));
 
-        // Convertir el DTO de viaje a la entidad
         Viaje viaje = viajeMapper.viajeToEntity(viajeDTO, organizador, null);
 
-        // 'viaje' tiene un campo llamado 'password'
-        // Si existe este campo, lo hasheamos antes de guardarlo
+        viaje.getParticipantes().add(organizador);
+
         if (viaje.getPassword() != null) {
             String passHashed = passwordEncoder.encode(viaje.getPassword());
-            viaje.setPassword(passHashed);  // Reemplazamos el valor original con la versión hasheada
+            viaje.setPassword(passHashed);
         }
 
-        // Guardamos el viaje en la base de datos
         Viaje viajeGuardado = viajeRepository.save(viaje);
-
-        // Retornamos el DTO con los datos del viaje guardado
         return viajeMapper.viajeToDto(viajeGuardado);
     }
 
-    // Editar un viaje existente
+    @PreAuthorize("@viajeService.isOrganizer(#idViaje)")
     public ViajeDTO editarViaje(Long viajeId, ViajeDTO viajeDTO) {
         Viaje viaje = viajeRepository.findById(viajeId)
                 .orElseThrow(() -> new IllegalArgumentException("Viaje no encontrado"));
@@ -77,7 +73,7 @@ public class ViajeService {
         return viajeMapper.viajeToDto(viajeActualizado);
     }
 
-    // Eliminar un viaje
+    @PreAuthorize("@viajeService.isOrganizer(#idViaje)")
     public void eliminarViaje(Long viajeId) {
         if (!viajeRepository.existsById(viajeId)) {
             throw new IllegalArgumentException("Viaje no encontrado");
@@ -105,6 +101,7 @@ public class ViajeService {
         viajeRepository.save(viaje);
     }
 
+    @PreAuthorize("@viajeService.isParticipant(#idViaje)")
     public boolean isParticipant(Long idViaje) {
         Long currentUserId = usuarioService.getCurrentUserId();
         return viajeRepository.findById(idViaje)
@@ -113,6 +110,7 @@ public class ViajeService {
                 .orElse(false);
     }
 
+    @PreAuthorize("@viajeService.isOrganizer(#idViaje)")
     public boolean isOrganizer(Long idViaje) {
         Long currentUserId = usuarioService.getCurrentUserId();
         return viajeRepository.findById(idViaje)
@@ -120,6 +118,7 @@ public class ViajeService {
                 .orElse(false);
     }
 
+    @PreAuthorize("@viajeService.isOrganizer(#idViaje)")
     public boolean canRemoveParticipant(Long idViaje, Long idUsuario) {
         Long currentUserId = usuarioService.getCurrentUserId();
         return viajeRepository.findById(idViaje).map(viaje -> {

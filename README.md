@@ -44,16 +44,17 @@ Además, esta API REST cumple con las mejores prácticas en diseño y seguridad,
 | `roles`    | String           | Roles: "user" o "admin".         |
 
 ### **b. Viajes**
-| Campo             | Tipo              | Descripción                              |
-|-------------------|-------------------|------------------------------------------|
-| `id`              | PK, autogenerado  | Identificador único del viaje.           |
-| `nombre`          | String            | Nombre del viaje.                        |
-| `descripcion`     | String            | Descripción del viaje.                   |
-| `fecha_inicio`    | Date              | Fecha estimada de inicio del viaje.      |
-| `fecha_fin`       | Date              | Fecha estimada de conclusión del viaje.  |
-| `organizador_id`  | FK a Usuarios     | Usuario organizador del viaje.           |
-| `participantes`   | List<Usuario>     | Lista de participantes del viaje.        |
-| `actividades`     | List<Actividad>   | Lista de actividades planificadas.       |
+| Campo            | Tipo              | Descripción                             |
+|------------------|-------------------|-----------------------------------------|
+| `id`             | PK, autogenerado  | Identificador único del viaje.          |
+| `nombre`         | String            | Nombre del viaje.                       |
+| `password`       | String            | Contraseña del viaje.                   |
+| `descripcion`    | String            | Descripción del viaje.                  |
+| `fecha_inicio`   | Date              | Fecha estimada de inicio del viaje.     |
+| `fecha_fin`      | Date              | Fecha estimada de conclusión del viaje. |
+| `organizador_id` | FK a Usuarios     | Usuario organizador del viaje.          |
+| `participantes`  | List<Usuario>     | Lista de participantes del viaje.       |
+| `actividades`    | List<Actividad>   | Lista de actividades planificadas.      |
 
 ### **c. Actividades**
 | Campo         | Tipo             | Descripción                           |
@@ -76,6 +77,7 @@ Además, esta API REST cumple con las mejores prácticas en diseño y seguridad,
 ### **Viajes**
 - `GET /viajes` - Obtener todos los viajes del usuario autenticado.
 - `POST /viajes` - Crear un viaje (solo usuarios autenticados).
+- `PUT /viajes/unirse` - Unirse a un viaje existente (solo usuarios autenticados)
 - `PUT /viajes/{id}` - Editar un viaje existente (solo organizador).
 - `DELETE /viajes/{id}` - Eliminar un viaje (solo organizador).
 
@@ -138,6 +140,8 @@ Además, esta API REST cumple con las mejores prácticas en diseño y seguridad,
 - Un usuario puede eliminarse a sí mismo del viaje en cualquier momento, siempre y cuando:
     - No sea el único participante.
     - No sea el organizador.
+
+Los usuariops se uniran al viaje mediante un codigo, 
 
 
 ## Actividades
