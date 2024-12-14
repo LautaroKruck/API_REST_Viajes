@@ -1,6 +1,8 @@
 package organizador_viajes.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -107,5 +109,18 @@ public class UsuarioService implements UserDetailsService {
 
         return usuarioMapper.entityToDto(u);
 
+    }
+
+    public Long getCurrentUserId() {
+        // Obtener la autenticación actual del SecurityContext
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Verificar si la autenticación no es nula y si el principal es un usuario
+        if (authentication != null && authentication.getPrincipal() instanceof Usuario) {
+            Usuario usuario = (Usuario) authentication.getPrincipal();
+            return usuario.getId(); // Devuelve el ID del usuario autenticado
+        }
+
+        throw new RuntimeException("Usuario no autenticado");
     }
 }

@@ -29,6 +29,9 @@ public class ViajeService {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
     private ViajeMapper viajeMapper;
 
     // Obtener todos los viajes de un usuario
@@ -102,4 +105,28 @@ public class ViajeService {
         viajeRepository.save(viaje);
     }
 
+    public boolean isParticipant(Long idViaje) {
+        Long currentUserId = usuarioService.getCurrentUserId();
+        return viajeRepository.findById(idViaje)
+                .map(viaje -> viaje.getParticipantes().stream()
+                        .anyMatch(participante -> participante.getId().equals(currentUserId)))
+                .orElse(false);
+    }
+
+    public boolean isOrganizer(Long idViaje) {
+        Long currentUserId = usuarioService.getCurrentUserId();
+        return viajeRepository.findById(idViaje)
+                .map(viaje -> viaje.getOrganizador().getId().equals(currentUserId))
+                .orElse(false);
+    }
+
+    public boolean canRemoveParticipant(Long idViaje, Long idUsuario) {
+        Long currentUserId = usuarioService.getCurrentUserId();
+        return viajeRepository.findById(idViaje).map(viaje -> {
+            boolean isOrganizer = viaje.getOrganizador().getId().equals(currentUserId);
+            boolean isRemovingSelf = currentUserId.equals(idUsuario);
+            boolean notOnlyParticipant = viaje.getParticipantes().size() > 1;
+            return isOrganizer || (isRemovingSelf && notOnlyParticipant);
+        }).orElse(false);
+    }
 }
