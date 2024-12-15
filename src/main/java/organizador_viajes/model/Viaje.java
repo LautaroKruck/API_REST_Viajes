@@ -8,6 +8,7 @@ import java.util.List;
 
 // Modelo de Viaje
 @Entity
+@Table(name = "viajes")
 public class Viaje {
 
     @Id
@@ -22,10 +23,10 @@ public class Viaje {
 
     private String descripcion;
 
-    @Column(nullable = false)
+    @Column(name = "fecha_inicio",nullable = false)
     private LocalDate fechaInicio;
 
-    @Column(nullable = false)
+    @Column(name = "fecha_fin",nullable = false)
     private LocalDate fechaFin;
 
     @ManyToOne
@@ -42,6 +43,41 @@ public class Viaje {
 
     @OneToMany(mappedBy = "viaje", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Actividad> actividades = new ArrayList<>();
+
+    public Viaje(Long id, String nombre, String password, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, Usuario organizador, List<Usuario> participantes, List<Actividad> actividades) {
+        this.id = id;
+        this.nombre = nombre;
+        this.password = password;
+        this.descripcion = descripcion;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.organizador = organizador;
+        this.participantes = participantes != null ? participantes : new ArrayList<>(); // Asegura que no sea null
+        this.actividades = actividades != null ? actividades : new ArrayList<>(); // Asegura que no sea null
+    }
+
+    public Viaje(String nombre, String password, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, Usuario organizador, List<Usuario> participantes, List<Actividad> actividades) {
+        this.nombre = nombre;
+        this.password = password;
+        this.descripcion = descripcion;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.organizador = organizador;
+        this.participantes = participantes != null ? participantes : new ArrayList<>(); // Asegura que no sea null
+        this.actividades = actividades != null ? actividades : new ArrayList<>(); // Asegura que no sea null
+    }
+
+    public Viaje(String nombre, String password, String descripcion, LocalDate fechaInicio, LocalDate fechaFin, Usuario organizador) {
+        this.nombre = nombre;
+        this.password = password;
+        this.descripcion = descripcion;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.organizador = organizador;
+    }
+
+    public Viaje() {
+    }
 
     // Getters y Setters
     public Long getId() {

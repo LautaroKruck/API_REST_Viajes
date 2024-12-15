@@ -12,8 +12,13 @@ import org.springframework.web.bind.annotation.*;
 import organizador_viajes.dto.UsuarioLoginDTO;
 import organizador_viajes.dto.UsuarioRegisterDTO;
 import organizador_viajes.dto.UsuarioDTO;
+import organizador_viajes.error.exception.GenericInternalException;
+import organizador_viajes.error.exception.NotAuthorizedException;
+import organizador_viajes.error.exception.NotFoundException;
 import organizador_viajes.service.TokenService;
 import organizador_viajes.service.UsuarioService;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -57,10 +62,6 @@ public class UsuarioController {
             5. Otros detalles adicionales
          */
 
-        System.out.println(
-                usuarioLoginDTO.getUsername() + " " + usuarioLoginDTO.getPassword()
-        );
-
         Authentication authentication = null;
         try {
             authentication = authenticationManager.authenticate(
@@ -68,7 +69,7 @@ public class UsuarioController {
             );
         } catch (Exception e) {
             System.out.println("Excepcion en authentication");
-            e.printStackTrace();
+            throw new NotFoundException("Credenciales del usuario incorrectas");
         }
 
         // Generamos el token
@@ -77,7 +78,7 @@ public class UsuarioController {
             token = tokenService.generateToken(authentication);
         } catch (Exception e) {
             System.out.println("Excepcion en generar token");
-            e.printStackTrace();
+            throw new GenericInternalException("Error al generar el token de autenticación");
         }
 
         // Retornamos el token
@@ -95,21 +96,14 @@ public class UsuarioController {
     public ResponseEntity<UsuarioRegisterDTO> register(
             @RequestBody UsuarioRegisterDTO usuarioRegisterDTO) {
 
-        System.out.println(
-                usuarioRegisterDTO.getPassword()
-        );
-
         usuarioService.registerUser(usuarioRegisterDTO);
 
         return new ResponseEntity<UsuarioRegisterDTO>(usuarioRegisterDTO, HttpStatus.OK);
 
     }
-
     @GetMapping("/byNombre/{nombre}")
-    public ResponseEntity<UsuarioDTO> findByNombre(@PathVariable String nombre, Authentication authentication) {
+    public ResponseEntity<UsuarioDTO> findByNombre(@PathVariable String nombre, Authentication authentication, Principal principal) {
 
-        System.out.println(authentication.getAuthorities().stream()
-                .anyMatch(authority -> authority.equals(new SimpleGrantedAuthority("ROLE_ADMIN"))));
 
         if(authentication.getAuthorities()
                 .stream()
@@ -117,10 +111,9 @@ public class UsuarioController {
             UsuarioDTO usuarioDTO = usuarioService.findByNombre(nombre);
             return new ResponseEntity<>(usuarioDTO, HttpStatus.OK);
         } else {
-            System.out.println("No tienes los permisos para acceder al recurso");
-            return null;
+            throw new NotAuthorizedException("No tienes los permisos para acceder al recurso");
         }
 
     }
-}
 
+}

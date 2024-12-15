@@ -1,10 +1,17 @@
 package organizador_viajes.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "usuarios")
-public class Usuario {
+public class Usuario  implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,23 +23,18 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
-    @Column
-    private Integer edad;
-
     private String roles; // e.g., "ROLE_USER,ROLE_ADMIN"
 
-    public Usuario(Long id, String username, String password, Integer edad, String roles) {
+    public Usuario(Long id, String username, String password, String roles) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.edad = edad;
         this.roles = roles;
     }
 
-    public Usuario(String username, String password, Integer edad, String roles) {
+    public Usuario(String username, String password, String roles) {
         this.username = username;
         this.password = password;
-        this.edad = edad;
         this.roles = roles;
     }
 
@@ -50,8 +52,33 @@ public class Usuario {
         return username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Stream.of(this.getRoles().split(",")).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
     public String getPassword() {
@@ -70,4 +97,3 @@ public class Usuario {
         this.roles = roles;
     }
 }
-

@@ -13,7 +13,6 @@ public class ActividadMapper {
             return null;
         }
         ActividadDTO dto = new ActividadDTO();
-        dto.setId(actividad.getId());
         dto.setNombre(actividad.getNombre());
         dto.setDescripcion(actividad.getDescripcion());
         dto.setFechaHora(actividad.getFechaHora());
@@ -26,7 +25,6 @@ public class ActividadMapper {
             return null;
         }
         Actividad actividad = new Actividad();
-        actividad.setId(dto.getId());
         actividad.setNombre(dto.getNombre());
         actividad.setDescripcion(dto.getDescripcion());
         actividad.setFechaHora(dto.getFechaHora());

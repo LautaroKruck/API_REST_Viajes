@@ -17,14 +17,14 @@ public class ViajeMapper {
     @Autowired
     private ActividadMapper actividadMapper;
 
-
+    // Convierte una entidad Viaje a un DTO completo (incluye password)
     public ViajeDTO viajeToDto(Viaje viaje) {
         if (viaje == null) {
             return null;
         }
         ViajeDTO dto = new ViajeDTO();
-        dto.setId(viaje.getId());
         dto.setNombre(viaje.getNombre());
+        dto.setPassword(viaje.getPassword()); // Agregamos el campo password
         dto.setDescripcion(viaje.getDescripcion());
         dto.setFechaInicio(viaje.getFechaInicio());
         dto.setFechaFin(viaje.getFechaFin());
@@ -38,13 +38,14 @@ public class ViajeMapper {
         return dto;
     }
 
+    // Convierte un DTO a una entidad Viaje (incluye password)
     public Viaje viajeToEntity(ViajeDTO dto, Usuario organizador, List<Usuario> participantes) {
         if (dto == null) {
             return null;
         }
         Viaje viaje = new Viaje();
-        viaje.setId(dto.getId());
         viaje.setNombre(dto.getNombre());
+        viaje.setPassword(dto.getPassword()); // Agregamos el campo password
         viaje.setDescripcion(dto.getDescripcion());
         viaje.setFechaInicio(dto.getFechaInicio());
         viaje.setFechaFin(dto.getFechaFin());

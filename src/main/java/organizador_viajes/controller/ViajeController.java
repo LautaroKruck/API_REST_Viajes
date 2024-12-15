@@ -41,11 +41,9 @@ public class ViajeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ViajeDTO>> obtenerTodosLosViajes(@RequestParam Long usuarioId) {
-        if (usuarioId == null) {
-            throw new BadRequestException("El ID de usuario no puede ser null.");
-        }
-        List<ViajeDTO> viajes = viajeService.obtenerViajesPorUsuario(usuarioId);
+    public ResponseEntity<List<ViajeDTO>> getAll() {
+
+        List<ViajeDTO> viajes = viajeService.getAll();
         return ResponseEntity.ok(viajes);
     }
 

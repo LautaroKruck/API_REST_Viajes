@@ -2,6 +2,8 @@ package organizador_viajes.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,11 +13,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import organizador_viajes.dto.UsuarioDTO;
 import organizador_viajes.dto.UsuarioRegisterDTO;
+import organizador_viajes.error.exception.DuplicateException;
 import organizador_viajes.error.exception.NotFoundException;
 import organizador_viajes.utils.UsuarioMapper;
 import organizador_viajes.model.Usuario;
 import organizador_viajes.repository.UsuarioRepository;
 import organizador_viajes.security.SecurityConfig;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -62,11 +69,15 @@ public class UsuarioService implements UserDetailsService {
         Tenemos que convertir nuestro objeto de tipo Usuario a un objeto de tipo UserDetails
         ¡No os preocupéis, esto es siempre igual!
          */
+        List<GrantedAuthority> authorities = Arrays.stream(usuario.getRoles().split(","))
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.trim()))
+                .collect(Collectors.toList());
+
         UserDetails userDetails = User // User pertenece a SpringSecurity
                 .builder()
                 .username(usuario.getUsername())
                 .password(usuario.getPassword())
-                .roles(usuario.getRoles().split(","))
+                .roles(usuario.getRoles())
                 .build();
 
         return userDetails;
@@ -80,7 +91,7 @@ public class UsuarioService implements UserDetailsService {
     public UsuarioRegisterDTO registerUser(UsuarioRegisterDTO usuarioRegisterDTO) {
         // Comprobamos que el usuario no existe en la base de datos
         if (usuarioRepository.findByUsername(usuarioRegisterDTO.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("El nombre de usuario ya existe");
+            throw new DuplicateException("El nombre de usuario ya existe");
         }
 
         // Creamos la instancia de

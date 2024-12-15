@@ -14,6 +14,7 @@ import organizador_viajes.repository.UsuarioRepository;
 import organizador_viajes.repository.ViajeRepository;
 import organizador_viajes.utils.ViajeMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,21 +42,35 @@ public class ViajeService {
         return viajes.stream().map(viajeMapper::viajeToDto).collect(Collectors.toList());
     }
 
+    // Método para obtener todos los viajes de un usuario
+    @PreAuthorize("hasRole(\"ADMIN\")")
+    public List<ViajeDTO> getAll() {
+        List<Viaje> viajes = viajeRepository.findAll();
+        return viajes.stream().map(viajeMapper::viajeToDto).collect(Collectors.toList());
+    }
+
     // Crear un nuevo viaje
     public ViajeDTO crearViaje(ViajeDTO viajeDTO) {
+        // Buscar al organizador
         Usuario organizador = usuarioRepository.findById(viajeDTO.getOrganizadorId())
                 .orElseThrow(() -> new IllegalArgumentException("Usuario organizador no encontrado"));
 
-        Viaje viaje = viajeMapper.viajeToEntity(viajeDTO, organizador, null);
+        // Crear el objeto Viaje
+        Viaje viaje = viajeMapper.viajeToEntity(viajeDTO, organizador, new ArrayList<>());
 
+        // Agregar al organizador como participante
         viaje.getParticipantes().add(organizador);
 
-        if (viaje.getPassword() != null) {
-            String passHashed = passwordEncoder.encode(viaje.getPassword());
-            viaje.setPassword(passHashed);
+        // Si el viaje tiene contraseña, la hasheamos
+        if (viaje.getPassword() == null || viaje.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña no puede estar vacía");
         }
+        viaje.setPassword(passwordEncoder.encode(viaje.getPassword()));
 
+        // Guardamos el viaje en la base de datos
         Viaje viajeGuardado = viajeRepository.save(viaje);
+
+        // Devolvemos el DTO del viaje guardado
         return viajeMapper.viajeToDto(viajeGuardado);
     }
 

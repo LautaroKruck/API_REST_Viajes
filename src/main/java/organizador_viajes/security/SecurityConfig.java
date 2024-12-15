@@ -54,23 +54,23 @@ public class SecurityConfig {
 
                         // Rutas relacionadas con USUARIOS
                         .requestMatchers(HttpMethod.GET, "/usuarios/{idUsuario}").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/usuarios/{idUsuario}").hasRole("USER")
+                        .requestMatchers(HttpMethod.PUT, "/usuarios/{idUsuario}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/usuarios").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/usuarios/{idUsuario}").hasRole("ADMIN")
 
                         // Rutas relacionadas con VIAJES
-                        .requestMatchers(HttpMethod.GET, "/viajes").hasRole("USER")
-                        .requestMatchers(HttpMethod.GET, "/viajes/{idViaje}").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/viajes").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT, "/viajes/{idViaje}").hasRole("USER")
-                        .requestMatchers(HttpMethod.DELETE, "/viajes/{idViaje}").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/viajes").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/viajes/").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/viajes").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/viajes/").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/viajes/").authenticated()
 
                         // Rutas relacionadas con ACTIVIDADES
-                        .requestMatchers(HttpMethod.GET, "/viajes/{viajeId}/actividades").hasRole("USER")
-                        .requestMatchers(HttpMethod.GET, "/actividades/{idActividad}").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/viajes/{idViaje}/actividades").hasRole("USER")
-                        .requestMatchers(HttpMethod.PUT, "/actividades/{idActividad}").hasRole("USER")
-                        .requestMatchers(HttpMethod.DELETE, "/actividades/{idActividad}").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/viajes/{viajeId}/actividades").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/actividades/").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/viajes/{idViaje}/actividades").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/actividades/").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/actividades/").authenticated()
 
                         // Cualquier otra ruta requiere autenticación
                         .anyRequest().authenticated()
@@ -80,7 +80,6 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
-
 
     /**
      * Método que carga en el Spring ApplicationContext un Bean de tipo PasswordEncoder
@@ -128,6 +127,4 @@ public class SecurityConfig {
         return new NimbusJwtEncoder(jwks);
     }
 
-
 }
-

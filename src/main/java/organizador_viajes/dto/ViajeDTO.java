@@ -1,30 +1,25 @@
 package organizador_viajes.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 // DTO de Viaje
 public class ViajeDTO {
 
-    private Long id;
     private String nombre;
     private String password;
     private String descripcion;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
     private Long organizadorId;
-    private List<Long> participantesIds;
-    private List<ActividadDTO> actividades;
+    private List<Long> participantesIds = new ArrayList<>();
+    private List<ActividadDTO> actividades = new ArrayList<>();
 
     // Getters y Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getNombre() {
         return nombre;
@@ -79,7 +74,7 @@ public class ViajeDTO {
     }
 
     public void setParticipantesIds(List<Long> participantesIds) {
-        this.participantesIds = participantesIds;
+        this.participantesIds = participantesIds != null ? participantesIds : new ArrayList<>();
     }
 
     public List<ActividadDTO> getActividades() {
@@ -87,6 +82,6 @@ public class ViajeDTO {
     }
 
     public void setActividades(List<ActividadDTO> actividades) {
-        this.actividades = actividades;
+        this.actividades = actividades != null ? actividades : new ArrayList<>();
     }
 }

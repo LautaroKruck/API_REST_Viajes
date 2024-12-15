@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 // Modelo de Actividad
 @Entity
+@Table(name = "actividades")
 public class Actividad {
 
     @Id
@@ -17,7 +18,7 @@ public class Actividad {
 
     private String descripcion;
 
-    @Column(nullable = false)
+    @Column(name="fecha_hora", nullable = false)
     private LocalDateTime fechaHora;
 
     private String ubicacion;
@@ -25,6 +26,33 @@ public class Actividad {
     @ManyToOne
     @JoinColumn(name = "viaje_id", nullable = false)
     private Viaje viaje;
+
+    public Actividad(Long id, String nombre, String descripcion, LocalDateTime fechaHora, String ubicacion, Viaje viaje) {
+        this.id = id;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.fechaHora = fechaHora;
+        this.ubicacion = ubicacion;
+        this.viaje = viaje;
+    }
+
+    public Actividad(String nombre, String descripcion, LocalDateTime fechaHora, String ubicacion, Viaje viaje) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.fechaHora = fechaHora;
+        this.ubicacion = ubicacion;
+        this.viaje = viaje;
+    }
+
+    public Actividad(String nombre, String descripcion, LocalDateTime fechaHora, String ubicacion) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.fechaHora = fechaHora;
+        this.ubicacion = ubicacion;
+    }
+
+    public Actividad() {
+    }
 
     // Getters y Setters
     public Long getId() {

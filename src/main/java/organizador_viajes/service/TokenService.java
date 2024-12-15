@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,9 +29,9 @@ public class TokenService {
     public String generateToken(Authentication authentication) {
         Instant now = Instant.now();
 
-        String roles = authentication.getAuthorities().stream()
+        List<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(" "));
+                .collect(Collectors.toList());
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")

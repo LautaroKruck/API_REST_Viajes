@@ -4,7 +4,6 @@ public class UsuarioDTO {
 
     private String username;
     private String password;
-    private Integer edad;
     private String[] roles;
 
     public UsuarioDTO(String username, String password, String[] roles) {
